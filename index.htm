@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Adviser</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::after {
+            content: 'NIKHIL';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 15vw;
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.05);
+            z-index: -1;
+            pointer-events: none;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .container-card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: 2rem auto;
+            border: 1px solid #e2e8f0;
+            position: relative; /* To make it a stacking context for content */
+            z-index: 1;
+        }
+        .section-card {
+            background-color: #f8fafc;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+        }
+        .btn-blue-gradient {
+            background: linear-gradient(to right, #3b82f6, #60a5fa);
+            color: white;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-blue-gradient:hover {
+            background: linear-gradient(to right, #60a5fa, #3b82f6);
+            transform: scale(1.02);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ef4444;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .message-box.show {
+            opacity: 1;
+        }
+        .job-card {
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .degree-card {
+            width: 100%;
+            text-align: center;
+        }
+        .spec-card {
+            background-color: #f0f4f8;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s ease-in-out;
+        }
+        .spec-card:hover {
+            transform: scale(1.02);
+            background-color: #e2e8f0;
+        }
+        .spec-card.selected {
+            border-color: #3b82f6;
+            background-color: #dbeafe;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 flex items-center justify-center">
+
+    <div id="main-container" class="container-card">
+
+        <!-- Navigation Bar -->
+        <nav class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">AI Career Adviser</h1>
+            <div class="space-x-4">
+                <button id="home-btn" class="text-blue-600 font-semibold hover:underline flex items-center">
+                    <i class="fas fa-home mr-2"></i>Home
+                </button>
+                <button id="about-btn" class="text-blue-600 font-semibold hover:underline flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i>About
+                </button>
+            </div>
+        </nav>
+
+        <!-- Header -->
+        <header id="header" class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800">Discover Your Career Path</h1>
+            <p class="text-gray-500 mt-2">Our AI analyzes your skills and interests to recommend personalized career paths.</p>
+        </header>
+        
+        <!-- About Section -->
+        <section id="about-section" class="hidden">
+            <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-200">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4">About this Application</h2>
+                <p class="text-gray-600 mb-4">
+                    This AI Career Adviser is designed to help you explore potential career paths based on your academic level, interests, and skills. By following a simple, step-by-step process, you can receive personalized recommendations and detailed information on how to pursue your dream career in India.
+                </p>
+                <p class="text-gray-600 mb-4">
+                    The recommendations are based on popular and in-demand career fields after the 10th and 12th standards, including various specializations in Engineering, Medical, and Management. Each career path includes an estimated salary range, educational requirements, and a clear career progression pathway to guide you.
+                </p>
+                
+                <!-- Founder Details Section -->
+                <div class="mt-6 border-t border-gray-200 pt-6">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Founder Details</h3>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li><strong>Name:</strong> Nikhil Gosavi</li>
+                        <li><strong>Instagram:</strong> <a href="https://www.instagram.com/nikhil_gosavi7/?__pwa=1#" class="text-blue-600 hover:underline flex items-center"><i class="fab fa-instagram mr-2"></i>nikhil_gosavi7</a></li>
+                        <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/nikhil-gosavi-548930319/" class="text-blue-600 hover:underline flex items-center"><i class="fab fa-linkedin-in mr-2"></i>nikhil-gosavi-548930319</a></li>
+                        <li><strong>GitHub:</strong> <a href="https://github.com/nikhilgosavi7" class="text-blue-600 hover:underline flex items-center"><i class="fab fa-github mr-2"></i>nikhilgosavi7</a></li>
+                        <li><strong>Phone:</strong> <a href="tel:7350005785" class="text-blue-600 hover:underline flex items-center"><i class="fas fa-phone mr-2"></i>7350005785</a></li>
+                    </ul>
+                </div>
+
+                <!-- Team Members Section -->
+                <div class="mt-6 border-t border-gray-200 pt-6">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Team Members</h3>
+                    <ul class="list-disc list-inside text-gray-600 space-y-2">
+                        <li>Jagruti Kale</li>
+                        <li>Tanvi Patil</li>
+                        <li>Yuvraj</li>
+                        <li>Ankit Singh</li>
+                    </ul>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button id="about-back-btn" class="btn-blue-gradient py-3 px-8 rounded-full font-semibold focus:outline-none transition-all">Back</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Initial Education Level Selection Section -->
+        <section id="education-section">
+            <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-200 text-center">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4">What is your current education level?</h2>
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-center mt-6">
+                    <button id="after-10th-btn" class="btn-blue-gradient py-3 px-8 rounded-full font-semibold focus:outline-none transition-all">After 10th Standard</button>
+                    <button id="after-12th-btn" class="btn-blue-gradient py-3 px-8 rounded-full font-semibold focus:outline-none transition-all">After 12th Standard</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Degree Selection Section -->
+        <section id="degree-section" class="hidden">
+            <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-200 text-center">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Choose a Degree/Course</h2>
+                <div id="degree-buttons" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                    <!-- Degree buttons will be populated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Specialization Selection Section -->
+        <section id="specialization-section" class="hidden">
+            <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-200 text-center">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Choose Your Specialization</h2>
+                <div id="specialization-buttons" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                    <!-- Specialization buttons will be populated here -->
+                </div>
+                <div class="mt-6 text-center">
+                    <button id="spec-back-btn" class="btn-blue-gradient py-3 px-8 rounded-full font-semibold focus:outline-none transition-all">Back</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Input Section (Skills & Interests) -->
+        <section id="input-section" class="hidden">
+            <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-200">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Select Your Skills & Interests</h2>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Skills checkboxes will be populated here based on specialization -->
+                    <div id="skills-container"></div>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button id="get-recommendations-btn" class="btn-blue-gradient py-3 px-8 rounded-full font-semibold focus:outline-none transition-all">Get AI Career Recommendations</button>
+                </div>
+                <div class="mt-4 text-center">
+                    <button id="skills-back-btn" class="btn-blue-gradient py-3 px-8 rounded-full font-semibold focus:outline-none transition-all">Back</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="hidden flex justify-center items-center py-10">
+            <div class="spinner"></div>
+            <p class="text-gray-500 ml-4 font-medium">Analyzing your profile...</p>
+        </div>
+
+        <!-- Summary Results Sections -->
+        <section id="summary-results-section" class="hidden">
+            <div class="section-card">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Recommended Career Paths</h3>
+                <p class="text-gray-600 mb-4">Here are some career paths that match your skills. Click on one to learn more!</p>
+                <div id="career-path-cards" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Career path cards will be inserted here by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center">
+                <button id="start-over-btn" class="btn-blue-gradient py-3 px-8 rounded-full font-semibold focus:outline-none transition-all">Start Over</button>
+            </div>
+        </section>
+
+        <!-- Detailed Job View Section -->
+        <section id="detailed-job-section" class="hidden">
+            <div class="p-6 bg-white rounded-xl shadow-lg border border-gray-200">
+                <h2 id="job-title" class="text-3xl font-bold text-gray-800 mb-2"></h2>
+                <p id="job-salary" class="text-lg text-gray-500 mb-6"></p>
+
+                <!-- How to Join Section -->
+                <div class="section-card">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">How to Join & Get This Job</h3>
+                    <p id="how-to-join" class="text-gray-600 leading-relaxed"></p>
+                </div>
+
+                <!-- Career Pathway Section -->
+                <div class="section-card">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Career Pathway</h3>
+                    <div id="career-pathway-steps" class="flex flex-col items-start md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4 mt-4"></div>
+                </div>
+
+                <!-- Preferred Skills Section -->
+                <div class="section-card">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Preferred Skills</h3>
+                    <ul id="preferred-skills-list" class="list-disc list-inside mt-4 text-gray-600 space-y-2"></ul>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <button id="back-btn" class="btn-blue-gradient py-3 px-8 rounded-full font-semibold focus:outline-none transition-all">Back to Recommendations</button>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Message Box -->
+    <div id="message-box" class="message-box"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const homeBtn = document.getElementById('home-btn');
+            const aboutBtn = document.getElementById('about-btn');
+            const aboutBackBtn = document.getElementById('about-back-btn');
+            const after10thBtn = document.getElementById('after-10th-btn');
+            const after12thBtn = document.getElementById('after-12th-btn');
+            const specBackBtn = document.getElementById('spec-back-btn');
+            const skillsBackBtn = document.getElementById('skills-back-btn');
+            const getRecommendationsBtn = document.getElementById('get-recommendations-btn');
+            const startOverBtn = document.getElementById('start-over-btn');
+            const backBtn = document.getElementById('back-btn');
+            
+            const educationSection = document.getElementById('education-section');
+            const degreeSection = document.getElementById('degree-section');
+            const specializationSection = document.getElementById('specialization-section');
+            const inputSection = document.getElementById('input-section');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const summaryResultsSection = document.getElementById('summary-results-section');
+            const detailedJobSection = document.getElementById('detailed-job-section');
+            const aboutSection = document.getElementById('about-section');
+            const header = document.getElementById('header');
+
+            const degreeButtonsContainer = document.getElementById('degree-buttons');
+            const specializationButtonsContainer = document.getElementById('specialization-buttons');
+            const skillsContainer = document.getElementById('skills-container');
+            const messageBox = document.getElementById('message-box');
+            const careerPathCardsContainer = document.getElementById('career-path-cards');
+
+            // Detailed view elements
+            const jobTitleEl = document.getElementById('job-title');
+            const jobSalaryEl = document.getElementById('job-salary');
+            const howToJoinEl = document.getElementById('how-to-join');
+            const careerPathwayStepsEl = document.getElementById('career-pathway-steps');
+            const preferredSkillsListEl = document.getElementById('preferred-skills-list');
+
+            let careerPathType = ''; // 'after10th' or 'after12th'
+            let selectedDegree = ''; // 'Engineering', 'BBA', etc.
+            let selectedSpecialization = '';
+
+            const mockData = {
+                'after10th': {
+                    'Diploma': {
+                        specializations: {
+                            'Engineering': {
+                                salary: '₹3 LPA - ₹7 LPA',
+                                howToJoin: 'Enroll in a three-year diploma course in a field like Mechanical, Civil, or Electrical Engineering. The curriculum is hands-on, focusing on practical skills and industry applications.',
+                                pathway: ['Diploma Holder', 'Junior Engineer', 'Assistant Engineer', 'Associate Engineer'],
+                                preferredSkills: ['Problem-Solving', 'Mathematics', 'Practical Skills', 'Teamwork']
+                            },
+                            'Hotel Management': {
+                                salary: '₹2.5 LPA - ₹6 LPA',
+                                howToJoin: 'Enroll in a diploma course in hotel management. These courses are typically 1-2 years and cover food production, front office operations, and hospitality. Practical training is a key component.',
+                                pathway: ['Trainee', 'Hotel Management Assistant', 'Front Desk Executive', 'Supervisor'],
+                                preferredSkills: ['Communication', 'Customer Service', 'Hospitality', 'Team Collaboration']
+                            },
+                            'Web Design': {
+                                salary: '₹3 LPA - ₹7 LPA',
+                                howToJoin: 'Pursue a short-term or diploma course in web design. These courses focus on HTML, CSS, JavaScript, and design tools like Figma. Building a portfolio of projects is crucial for getting a job.',
+                                pathway: ['Web Design Trainee', 'Junior Web Designer', 'Web Designer', 'Senior Web Designer'],
+                                preferredSkills: ['Design', 'Creativity', 'HTML/CSS', 'Attention to Detail']
+                            },
+                            'Medical Lab Technology': {
+                                salary: '₹2 LPA - ₹5 LPA',
+                                howToJoin: 'A two-year diploma course focusing on lab procedures, diagnostic tests, and instrument handling. Practical training in hospitals or labs is part of the curriculum.',
+                                pathway: ['Lab Assistant', 'Technician', 'Lab Technologist', 'Senior Technologist'],
+                                preferredSkills: ['Science', 'Accuracy', 'Attention to Detail', 'Healthcare Knowledge']
+                            }
+                        },
+                        commonSkills: ['Problem-Solving', 'Mathematics', 'Practical Skills', 'Communication', 'Technical Aptitude', 'Science']
+                    }
+                },
+                'after12th': {
+                    'Engineering (B.E./B.Tech)': {
+                        specializations: {
+                            'Computer Science': {
+                                salary: '₹6 LPA - ₹25 LPA',
+                                howToJoin: 'Complete 12th standard with Science. Qualify for JEE Main or JEE Advanced. Specialize in Computer Science Engineering to learn about programming, data structures, and algorithms. Build a strong portfolio of projects.',
+                                pathway: ['Student', 'Intern', 'Software Engineer', 'Senior Engineer'],
+                                preferredSkills: ['Programming', 'Data Analysis', 'AI/ML', 'Problem-Solving']
+                            },
+                            'Mechanical Engineering': {
+                                salary: '₹4 LPA - ₹15 LPA',
+                                howToJoin: 'Complete 12th standard with Science and clear engineering entrance exams. The program focuses on the design, analysis, and manufacturing of mechanical systems. Hands-on projects and internships are vital.',
+                                pathway: ['Student', 'Trainee Engineer', 'Mechanical Engineer', 'Senior Engineer'],
+                                preferredSkills: ['Problem-Solving', 'Design', 'Mathematics', 'Practical Skills']
+                            },
+                            'Civil Engineering': {
+                                salary: '₹4 LPA - ₹12 LPA',
+                                howToJoin: 'Complete 12th with Science and clear entrance exams. This degree deals with the design, construction, and maintenance of physical and naturally built environments. Fieldwork and on-site experience are critical.',
+                                pathway: ['Student', 'Site Engineer', 'Civil Engineer', 'Project Manager'],
+                                preferredSkills: ['Project Management', 'Attention to Detail', 'Leadership', 'Teamwork']
+                            },
+                            'Electrical Engineering': {
+                                salary: '₹5 LPA - ₹18 LPA',
+                                howToJoin: 'Clear 12th Science and entrance exams. This field focuses on the study of electricity, electronics, and electromagnetism. Students learn about power systems, control systems, and electronics.',
+                                pathway: ['Student', 'Electrical Engineer', 'Project Engineer', 'Senior Electrical Engineer'],
+                                preferredSkills: ['Mathematics', 'Problem-Solving', 'Technical Aptitude', 'Logical Thinking']
+                            }
+                        },
+                        commonSkills: ['Programming', 'Data Analysis', 'AI/ML', 'Cloud Computing', 'Leadership', 'Problem-Solving']
+                    },
+                    'Medical': {
+                        specializations: {
+                            'MBBS (Medicine)': {
+                                salary: '₹8 LPA - ₹30 LPA',
+                                howToJoin: 'Complete 12th with Physics, Chemistry, and Biology. Qualify for NEET-UG entrance exam. The program is 5.5 years long, followed by a compulsory internship.',
+                                pathway: ['Medical Student', 'Intern Doctor', 'General Physician', 'Specialist Doctor'],
+                                preferredSkills: ['Science', 'Dedication', 'Empathy', 'Communication']
+                            },
+                            'BDS (Dentistry)': {
+                                salary: '₹5 LPA - ₹15 LPA',
+                                howToJoin: 'Similar to MBBS, requires clearing NEET-UG. The program is 4 years, followed by a 1-year internship, focusing on oral health and surgery.',
+                                pathway: ['Dental Student', 'Intern Dentist', 'Junior Dentist', 'Specialist Dentist'],
+                                preferredSkills: ['Science', 'Precision', 'Patience', 'Empathy']
+                            },
+                            'BAMS (Ayurveda)': {
+                                salary: '₹3 LPA - ₹8 LPA',
+                                howToJoin: 'Requires NEET-UG qualification. The program focuses on traditional Indian medicine and is 5.5 years long, including internship.',
+                                pathway: ['BAMS Graduate', 'Ayurveda Consultant', 'Clinic Owner'],
+                                preferredSkills: ['Science', 'Herbal Knowledge', 'Patience', 'Counseling']
+                            },
+                            'BHMS (Homeopathy)': {
+                                salary: '₹3 LPA - ₹7 LPA',
+                                howToJoin: 'Requires NEET-UG qualification. A 5.5-year degree focusing on the principles of homeopathy.',
+                                pathway: ['BHMS Graduate', 'Homeopathy Consultant', 'Clinic Owner'],
+                                preferredSkills: ['Science', 'Patience', 'Counseling', 'Problem-Solving']
+                            }
+                        },
+                        commonSkills: ['Science', 'Empathy', 'Communication', 'Attention to Detail', 'Problem-Solving', 'Healthcare Knowledge']
+                    },
+                    'Business & Management': {
+                        specializations: {
+                            'BBA (Business Administration)': {
+                                salary: '₹3.5 LPA - ₹9 LPA',
+                                howToJoin: 'After 12th in any stream, you can join a BBA program. Admissions are based on 12th marks or entrance exams (e.g., SET, CUET). This degree provides a foundation in business management, sales, and marketing.',
+                                pathway: ['Management Trainee', 'Executive', 'Manager', 'Senior Manager'],
+                                preferredSkills: ['Leadership', 'Sales', 'Communication', 'Team Collaboration']
+                            },
+                            'MBA (Master of Business Administration)': {
+                                salary: '₹7 LPA - ₹30 LPA',
+                                howToJoin: 'Requires a Bachelor\'s degree and a good score in entrance exams like CAT, GMAT, or XAT. This postgraduate degree hones your business and management skills.',
+                                pathway: ['Analyst', 'Team Lead', 'Manager', 'Director'],
+                                preferredSkills: ['Strategy', 'Finance', 'Leadership', 'Project Management']
+                            },
+                            'Digital Marketing': {
+                                salary: '₹5 LPA - ₹12 LPA',
+                                howToJoin: 'Pursue a bachelor\'s degree in any field. Gain experience through internships and online courses. Specialize in SEO, SEM, content, or social media marketing.',
+                                pathway: ['Marketing Intern', 'Specialist', 'Manager', 'Senior Manager'],
+                                preferredSkills: ['Marketing', 'Branding', 'Writing', 'Data Analysis']
+                            },
+                            'Financial Analyst': {
+                                salary: '₹7 LPA - ₹16 LPA',
+                                howToJoin: 'Obtain a Bachelor\'s degree in Finance or a related field. Master financial modeling and spreadsheet software. Consider pursuing certifications like CFA.',
+                                pathway: ['Junior Analyst', 'Financial Analyst', 'Senior Analyst', 'Finance Manager'],
+                                preferredSkills: ['Finance', 'Data Analysis', 'Mathematics', 'Attention to Detail']
+                            }
+                        },
+                        commonSkills: ['Leadership', 'Project Management', 'Sales', 'Finance', 'Marketing', 'Data Analysis']
+                    },
+                    'Hotel Management': {
+                        specializations: {
+                            'Bachelor of Hotel Management': {
+                                salary: '₹4 LPA - ₹12 LPA',
+                                howToJoin: 'After 12th, pursue a Bachelor\'s degree in Hotel Management (BHM). Admissions often require an entrance exam. The course focuses on hospitality, food and beverage management, and practical skills through internships.',
+                                pathway: ['Management Trainee', 'Executive', 'Assistant Manager', 'Hotel Manager'],
+                                preferredSkills: ['Communication', 'Customer Service', 'Leadership', 'Teamwork']
+                            }
+                        },
+                        commonSkills: ['Communication', 'Customer Service', 'Hospitality', 'Team Collaboration']
+                    }
+                }
+            };
+
+            // Function to show a message to the user
+            function showMessage(message, type = 'error') {
+                messageBox.textContent = message;
+                messageBox.classList.add('show');
+                if (type === 'error') {
+                    messageBox.style.backgroundColor = '#ef4444';
+                }
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 3000);
+            }
+
+            // Function to populate degree buttons
+            function populateDegreeButtons(educationType) {
+                degreeButtonsContainer.innerHTML = '';
+                const degrees = Object.keys(mockData[educationType]);
+                degrees.forEach(degree => {
+                    const button = document.createElement('button');
+                    button.textContent = degree;
+                    button.className = "degree-card btn-blue-gradient py-3 px-8 rounded-full font-semibold focus:outline-none transition-all";
+                    button.dataset.degree = degree;
+                    button.addEventListener('click', () => {
+                        selectedDegree = degree;
+                        degreeSection.classList.add('hidden');
+                        specializationSection.classList.remove('hidden');
+                        populateSpecializationButtons();
+                    });
+                    degreeButtonsContainer.appendChild(button);
+                });
+            }
+            
+            // Function to populate specialization buttons
+            function populateSpecializationButtons() {
+                specializationButtonsContainer.innerHTML = '';
+                const specializations = Object.keys(mockData[careerPathType][selectedDegree].specializations);
+                specializations.forEach(spec => {
+                    const button = document.createElement('button');
+                    button.textContent = spec;
+                    button.className = "spec-card p-4 rounded-xl font-semibold transition-all";
+                    button.addEventListener('click', () => {
+                        selectedSpecialization = spec;
+                        specializationSection.classList.add('hidden');
+                        inputSection.classList.remove('hidden');
+                        populateSkillsCheckboxes(spec);
+                    });
+                    specializationButtonsContainer.appendChild(button);
+                });
+            }
+
+            // Function to populate skills checkboxes
+            function populateSkillsCheckboxes(specialization) {
+                skillsContainer.innerHTML = '';
+                const commonSkills = mockData[careerPathType][selectedDegree].commonSkills;
+                commonSkills.forEach(skill => {
+                    const label = document.createElement('label');
+                    label.className = "flex items-center text-gray-600";
+                    label.innerHTML = `
+                        <input type="checkbox" name="skills" value="${skill}" class="rounded text-blue-600 focus:ring-blue-500">
+                        <span class="ml-2">${skill}</span>
+                    `;
+                    skillsContainer.appendChild(label);
+                });
+            }
+
+            // Function to populate the UI with recommended jobs
+            function populateResults(selectedSkills) {
+                careerPathCardsContainer.innerHTML = '';
+                const availableSpecializations = Object.keys(mockData[careerPathType][selectedDegree].specializations);
+                let recommendedSpecializations = [];
+
+                if (selectedSkills.length > 0) {
+                    availableSpecializations.forEach(specialization => {
+                        const jobData = mockData[careerPathType][selectedDegree].specializations[specialization];
+                        const jobSkills = jobData.preferredSkills;
+                        const hasMatchingSkill = selectedSkills.some(skill => jobSkills.includes(skill));
+                        if (hasMatchingSkill) {
+                            recommendedSpecializations.push(specialization);
+                        }
+                    });
+                }
+                
+                if (recommendedSpecializations.length < 4) {
+                    recommendedSpecializations = availableSpecializations.slice(0, 4);
+                }
+
+                recommendedSpecializations.forEach(specialization => {
+                    const jobData = mockData[careerPathType][selectedDegree].specializations[specialization];
+                    const card = document.createElement('div');
+                    card.className = "job-card bg-white p-6 rounded-xl shadow-md border border-gray-200 flex flex-col justify-between";
+                    card.dataset.specialization = specialization;
+                    card.innerHTML = `
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-800">${specialization}</h4>
+                            <p class="text-md text-gray-500 mt-1">${jobData.salary}</p>
+                        </div>
+                    `;
+                    card.addEventListener('click', () => showJobDetails(specialization));
+                    careerPathCardsContainer.appendChild(card);
+                });
+            }
+
+            // Function to show the detailed job view
+            function showJobDetails(specialization) {
+                const jobData = mockData[careerPathType][selectedDegree].specializations[specialization];
+                if (!jobData) {
+                    showMessage('Job details not found.');
+                    return;
+                }
+
+                jobTitleEl.textContent = `${specialization} - ${selectedDegree}`;
+                jobSalaryEl.textContent = jobData.salary;
+                howToJoinEl.textContent = jobData.howToJoin;
+                
+                careerPathwayStepsEl.innerHTML = '';
+                jobData.pathway.forEach((step, index) => {
+                    const stepDiv = document.createElement('div');
+                    stepDiv.className = "flex items-center text-center flex-1";
+                    stepDiv.innerHTML = `
+                        <div class="flex-1">
+                            <span class="inline-flex items-center justify-center p-3 text-white bg-blue-600 rounded-full font-bold shadow-lg">
+                                ${index + 1}
+                            </span>
+                            <p class="mt-2 text-gray-700 font-semibold">${step}</p>
+                        </div>
+                        ${index < jobData.pathway.length - 1 ? '<div class="hidden md:block w-full h-1 bg-blue-200 flex-1 mx-4"></div>' : ''}
+                    `;
+                    careerPathwayStepsEl.appendChild(stepDiv);
+                });
+
+                preferredSkillsListEl.innerHTML = '';
+                jobData.preferredSkills.forEach(skill => {
+                    const li = document.createElement('li');
+                    li.textContent = skill;
+                    preferredSkillsListEl.appendChild(li);
+                });
+
+                summaryResultsSection.classList.add('hidden');
+                detailedJobSection.classList.remove('hidden');
+            }
+
+            function hideAllSections() {
+                educationSection.classList.add('hidden');
+                degreeSection.classList.add('hidden');
+                specializationSection.classList.add('hidden');
+                inputSection.classList.add('hidden');
+                loadingSpinner.classList.add('hidden');
+                summaryResultsSection.classList.add('hidden');
+                detailedJobSection.classList.add('hidden');
+                aboutSection.classList.add('hidden');
+                header.classList.remove('hidden');
+            }
+
+            // Event listener for the "Home" button
+            homeBtn.addEventListener('click', () => {
+                hideAllSections();
+                educationSection.classList.remove('hidden');
+            });
+
+            // Event listener for the "About" button
+            aboutBtn.addEventListener('click', () => {
+                hideAllSections();
+                aboutSection.classList.remove('hidden');
+                header.classList.add('hidden');
+            });
+            
+            // Event listener for the "Back" button on About section
+            aboutBackBtn.addEventListener('click', () => {
+                hideAllSections();
+                educationSection.classList.remove('hidden');
+            });
+
+            // Event listener for the "After 10th" button
+            after10thBtn.addEventListener('click', () => {
+                careerPathType = 'after10th';
+                educationSection.classList.add('hidden');
+                degreeSection.classList.remove('hidden');
+                populateDegreeButtons('after10th');
+            });
+
+            // Event listener for the "After 12th" button
+            after12thBtn.addEventListener('click', () => {
+                careerPathType = 'after12th';
+                educationSection.classList.add('hidden');
+                degreeSection.classList.remove('hidden');
+                populateDegreeButtons('after12th');
+            });
+
+            // Event listener for the "Back" button on Specialization section
+            specBackBtn.addEventListener('click', () => {
+                specializationSection.classList.add('hidden');
+                degreeSection.classList.remove('hidden');
+            });
+
+            // Event listener for the "Back" button on skills section
+            skillsBackBtn.addEventListener('click', () => {
+                inputSection.classList.add('hidden');
+                specializationSection.classList.remove('hidden');
+            });
+
+
+            // Event listener for the "Get Recommendations" button
+            getRecommendationsBtn.addEventListener('click', () => {
+                const skillsCheckboxes = document.querySelectorAll('#skills-container input[name="skills"]');
+                const selectedSkills = Array.from(skillsCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+
+                if (selectedSkills.length > 0) {
+                    inputSection.classList.add('hidden');
+                    loadingSpinner.classList.remove('hidden');
+
+                    setTimeout(() => {
+                        loadingSpinner.classList.add('hidden');
+                        summaryResultsSection.classList.remove('hidden');
+                        populateResults(selectedSkills);
+                    }, 2000);
+                } else {
+                    showMessage('Please select at least one skill to get started!');
+                }
+            });
+
+            // Event listener for the "Start Over" button
+            startOverBtn.addEventListener('click', () => {
+                hideAllSections();
+                educationSection.classList.remove('hidden');
+                const skillsCheckboxes = document.querySelectorAll('input[name="skills"]');
+                skillsCheckboxes.forEach(checkbox => checkbox.checked = false);
+            });
+
+            // Event listener for the "Back" button
+            backBtn.addEventListener('click', () => {
+                detailedJobSection.classList.add('hidden');
+                summaryResultsSection.classList.remove('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
